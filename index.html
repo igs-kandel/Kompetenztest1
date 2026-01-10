@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lösungen Kompetenztest 1</title>
+  <style>
+    :root{
+      --bg1:#f6f8ff;
+      --bg2:#fff7ef;
+      --text:#1a1a1a;
+
+      --card:#ffffffcc;
+
+      --btnBorder: rgba(0,0,0,0.9);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, var(--bg2), transparent 60%),
+        radial-gradient(900px 700px at 90% 20%, #eef3ff, transparent 60%),
+        linear-gradient(180deg, var(--bg1), #ffffff);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+    }
+
+    .app{
+      width:min(860px, 96%);
+      background:var(--card);
+      backdrop-filter: blur(8px);
+      border:1px solid #ffffff70;
+      border-radius:22px;
+      padding:22px 18px 26px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.12);
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      padding:6px 6px 18px;
+      width:100%;
+      text-align:center;
+    }
+
+    h1{
+      margin:0;
+      text-align:center;
+      font-size: clamp(20px, 3.8vw, 30px);
+      font-weight: 800;
+      letter-spacing: .2px;
+      line-height: 1.2;
+    }
+
+    /* 3D-goldgelber Stern */
+    .star{
+      width:44px;height:44px;
+      display:grid;place-items:center;
+      border-radius:14px;
+      background: radial-gradient(circle at 30% 25%, #fff7b0, #ffd34d 52%, #f1a90a 100%);
+      box-shadow:
+        0 10px 18px rgba(241,169,10,.35),
+        inset 0 2px 0 rgba(255,255,255,.65),
+        inset 0 -3px 0 rgba(0,0,0,.12);
+      position:relative;
+      transform: translateY(-1px);
+    }
+    .star::after{
+      content:"";
+      position:absolute;
+      inset:6px;
+      border-radius:12px;
+      background: linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,0));
+      pointer-events:none;
+      mix-blend-mode:screen;
+    }
+    .star span{
+      font-size:26px;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,.18));
+      transform: translateY(-1px);
+    }
+
+    /* Views */
+    .view{display:none;}
+    .view.active{display:block;}
+
+    /* Buttons list */
+    .btnlist{
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+      padding: 4px 8px 0;
+    }
+
+    /* Stylischer Button mit leichten Verlauf-Shift */
+    .choice{
+      position: relative;
+      border: 1.5px solid var(--btnBorder);
+      padding: 22px 26px;
+      border-radius: 26px;
+      width: 100%;
+      font-size: 18px;
+      font-weight: 750;
+      letter-spacing: .3px;
+      cursor: pointer;
+      color: #0f3b1f;
+
+      background: linear-gradient(
+        135deg,
+        #c9f7d3 0%,
+        #b9f0c6 40%,
+        #a9e8bb 100%
+      );
+
+      box-shadow:
+        0 10px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background-position .35s ease;
+      background-size: 200% 200%;
+      background-position: 0% 50%;
+      text-align:center;
+    }
+
+    /* dezenter Glanz */
+    .choice::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:26px;
+      background: linear-gradient(120deg, rgba(255,255,255,.55), rgba(255,255,255,0) 55%);
+      opacity:.6;
+      pointer-events:none;
+    }
+
+    .choice:hover{
+      background-position: 100% 50%;
+      box-shadow:
+        0 14px 28px rgba(0,0,0,.14),
+        inset 0 1px 0 rgba(255,255,255,.95);
+    }
+
+    /* Press animation */
+    .choice.press,
+    .choice:active{
+      transform: translateY(6px);
+      background-position: 50% 100%;
+      box-shadow:
+        0 5px 10px rgba(0,0,0,.18),
+        inset 0 2px 4px rgba(0,0,0,.12);
+    }
+
+    /* Detail */
+    .detail{
+      min-height: 420px;
+      position:relative;
+      padding: 10px 8px 8px;
+    }
+
+    .back{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      border:0;
+      border-radius:14px;
+      padding: 12px 14px;
+      font-size: 16px;
+      font-weight: 750;
+      cursor:pointer;
+      background: linear-gradient(180deg, #f2f2f2, #e6e6e6);
+      box-shadow:
+        0 9px 0 #cfcfcf,
+        0 16px 22px rgba(0,0,0,.14),
+        inset 0 2px 0 rgba(255,255,255,.8);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+    .back:active{
+      transform: translateY(6px);
+      box-shadow:
+        0 3px 0 #cfcfcf,
+        0 10px 18px rgba(0,0,0,.12),
+        inset 0 2px 0 rgba(255,255,255,.65);
+    }
+    .back:focus-visible{
+      outline: 3px solid rgba(60,130,255,.45);
+      outline-offset: 4px;
+    }
+
+    .sectionTitle{
+      margin-top: 16px;
+      font-weight: 850;
+      opacity: .8;
+      padding-left: 2px;
+    }
+
+    #imageContainer{
+      margin-top: 12px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .imgWrap{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .imgWrap img{
+      width:100%;
+      max-width:100%;
+      border-radius:14px;
+      border: 1px solid rgba(0,0,0,.10);
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    }
+    .imgStatus{
+      font-size: 12px;
+      opacity: .65;
+    }
+    .note{
+      margin-top: 14px;
+      font-size: 13px;
+      opacity: .6;
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Lösungen Kompetenztest 1">
+    <!-- START VIEW -->
+    <section id="view-home" class="view active" aria-labelledby="title">
+      <header>
+        <h1 id="title">Lösungen Kompetenztest 1</h1>
+        <div class="star" aria-hidden="true"><span>★</span></div>
+      </header>
+
+      <div class="btnlist" role="list">
+        <button class="choice" data-target="1" role="listitem">Addieren und Subtrahieren gleichnamiger Brüche</button>
+        <button class="choice" data-target="2" role="listitem">Addieren und Subtrahieren ungleichnamiger Brüche</button>
+        <button class="choice" data-target="3" role="listitem">Multiplizieren von Brüchen</button>
+        <button class="choice" data-target="4" role="listitem">Dividieren von Brüchen</button>
+        <button class="choice" data-target="5" role="listitem">KLAPS-Regel mit Brüchen</button>
+      </div>
+    </section>
+
+    <!-- DETAIL VIEW -->
+    <section id="view-detail" class="view" aria-label="Detailseite">
+      <div class="detail">
+        <button class="back" id="backBtn" type="button">← Zurück</button>
+        <div id="imageContainer"></div>
+        <div style="margin-top:28px; display:flex; justify-content:center;">
+          <button class="back" id="backBtnBottom" type="button">← Zurück</button>
+        </div>
+        </div>
+    </section>
+  </div>
+
+  <script>
+    (function(){
+      const home = document.getElementById('view-home');
+      const detail = document.getElementById('view-detail');
+      const backBtn = document.getElementById('backBtn');
+      const backBtnBottom = document.getElementById('backBtnBottom');
+      const container = document.getElementById('imageContainer');
+      const choiceButtons = Array.from(document.querySelectorAll('.choice'));
+
+      const imgMap = {
+        "1": ["1.jpg"],
+        "2": ["2.jpg", "3.jpg", "4.jpg"],
+        "3": ["5.jpg"],
+        "4": ["6.jpg"],
+        "5": ["7.jpg"]
+      };
+
+      function showHome(push=false){
+        detail.classList.remove('active');
+        home.classList.add('active');
+        if(push) history.pushState({view:'home'}, '', '#home');
+      }
+
+      function showDetail(n, push=false){
+        home.classList.remove('active');
+        detail.classList.add('active');
+        container.innerHTML = "";
+
+        (imgMap[n] || []).forEach(src => {
+          const wrap = document.createElement('div');
+          wrap.className = 'imgWrap';
+
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = src;
+          img.loading = "lazy";
+
+          const status = document.createElement('div');
+          status.className = 'imgStatus';
+          status.textContent = "Lade " + src + " …";
+
+          img.addEventListener('load', () => { status.textContent = ""; });
+          img.addEventListener('error', () => {
+            status.textContent = "❗ Konnte " + src + " nicht laden. Prüfe: Dateiname/Endung/Groß-Klein + gleicher Ordner.";
+          });
+
+          wrap.appendChild(img);
+          wrap.appendChild(status);
+          container.appendChild(wrap);
+        });
+
+        if(push) history.pushState({view:'detail', n}, '', '#k' + n);
+      }
+
+      // Click handlers: short press, then open
+      choiceButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.dataset.busy === '1') return;
+          btn.dataset.busy = '1';
+
+          btn.classList.add('press');
+          setTimeout(() => {
+            btn.classList.remove('press');
+            setTimeout(() => {
+              showDetail(btn.dataset.target, true);
+              btn.dataset.busy = '0';
+            }, 90);
+          }, 140);
+        });
+      });
+
+      backBtn.addEventListener('click', () => history.back());
+      if(backBtnBottom){ backBtnBottom.addEventListener('click', () => history.back()); }
+
+      window.addEventListener('popstate', (e) => {
+        const state = e.state;
+        if(!state || state.view === 'home'){
+          showHome(false);
+        } else if(state.view === 'detail'){
+          showDetail(state.n || "1", false);
+        }
+      });
+
+      // Initial state
+      if(location.hash && location.hash.startsWith('#k')){
+        const n = location.hash.replace('#k','') || '1';
+        history.replaceState({view:'detail', n}, '', location.hash);
+        showDetail(n, false);
+      } else {
+        history.replaceState({view:'home'}, '', '#home');
+        showHome(false);
+      }
+    })();
+  </script>
+</body>
+</html>
