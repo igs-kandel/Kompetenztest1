@@ -1,362 +1,210 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffbebe">
   <title>Lösungen Arbeitsplan 1</title>
   <style>
-    :root{
-      --bg1:#f6f8ff;
-      --bg2:#fff7ef;
-      --text:#1a1a1a;
-
-      --card:#ffffffcc;
-
-      --btnBorder: rgba(0,0,0,0.9);
+    :root { --pink:#ffbebe; --pink-dark:#e59191; --ink:#171717; --orange:#ef7d00; --green:#218c4a; --shadow:0 14px 34px rgba(80,20,20,.14); }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; min-height:100vh; color:var(--ink);
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at 15% 0%,#ffe8e8 0,transparent 34rem),linear-gradient(180deg,var(--pink),#fff3f3 70%);
     }
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text);
-      min-height:100vh;
-      background:
-        radial-gradient(1200px 600px at 20% 0%, var(--bg2), transparent 60%),
-        radial-gradient(900px 700px at 90% 20%, #eef3ff, transparent 60%),
-        linear-gradient(180deg, var(--bg1), #ffffff);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px;
+    button { font:inherit; }
+    .app { width:min(920px,calc(100% - 24px)); margin:0 auto; padding:28px 0 48px; }
+    .panel {
+      min-height:calc(100vh - 76px); padding:clamp(20px,4vw,38px);
+      border:2px solid rgba(0,0,0,.84); border-radius:28px;
+      background:rgba(255,253,253,.96); box-shadow:var(--shadow);
     }
-
-    .app{
-      width:min(860px, 96%);
-      background:var(--card);
-      backdrop-filter: blur(8px);
-      border:1px solid #ffffff70;
-      border-radius:22px;
-      padding:22px 18px 26px;
-      box-shadow: 0 18px 50px rgba(0,0,0,.12);
+    .view[hidden] { display:none; }
+    .hero {
+      margin:calc(-1 * clamp(20px,4vw,38px)); margin-bottom:30px; padding:34px 22px;
+      border-radius:26px 26px 18px 18px; background:var(--pink); text-align:center;
     }
-
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:12px;
-      padding:6px 6px 18px;
-      width:100%;
-      text-align:center;
+    h1,h2 { margin:0; line-height:1.2; }
+    h1 { font-size:clamp(27px,6vw,44px); }
+    h2 { font-size:clamp(23px,4.7vw,34px); }
+    .subtitle { margin:10px 0 0; font-size:clamp(15px,2.8vw,18px); }
+    .list { display:grid; gap:18px; }
+    .chapter-button,.task-button {
+      width:100%; border:2px solid var(--ink); border-radius:20px; cursor:pointer;
+      text-align:center; transition:transform .14s ease,box-shadow .14s ease,filter .14s ease;
     }
-
-    h1{
-      margin:0;
-      text-align:center;
-      font-size: clamp(20px, 3.8vw, 30px);
-      font-weight: 800;
-      letter-spacing: .2px;
-      line-height: 1.2;
+    .chapter-button {
+      min-height:82px; padding:20px 24px; background:var(--pink);
+      box-shadow:0 8px 0 var(--pink-dark),0 13px 20px rgba(0,0,0,.12);
+      font-size:clamp(18px,3vw,23px); font-weight:800;
     }
-
-    /* 3D-goldgelber Stern */
-    .star{
-      width:44px;height:44px;
-      display:grid;place-items:center;
-      border-radius:14px;
-      background: radial-gradient(circle at 30% 25%, #fff7b0, #ffd34d 52%, #f1a90a 100%);
-      box-shadow:
-        0 10px 18px rgba(241,169,10,.35),
-        inset 0 2px 0 rgba(255,255,255,.65),
-        inset 0 -3px 0 rgba(0,0,0,.12);
-      position:relative;
-      transform: translateY(-1px);
+    .task-button {
+      position:relative; min-height:66px; padding:16px 54px 16px 20px; background:white;
+      box-shadow:0 6px 0 #d8d8d8,0 10px 16px rgba(0,0,0,.10);
+      font-size:clamp(17px,3vw,21px); font-weight:750;
     }
-    .star::after{
-      content:"";
-      position:absolute;
-      inset:6px;
-      border-radius:12px;
-      background: linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,0));
-      pointer-events:none;
-      mix-blend-mode:screen;
+    .task-button::after {
+      content:"›"; position:absolute; top:50%; right:22px; transform:translateY(-52%);
+      font-size:34px; line-height:1;
     }
-    .star span{
-      font-size:26px;
-      filter: drop-shadow(0 2px 0 rgba(0,0,0,.18));
-      transform: translateY(-1px);
+    .chapter-button:hover,.task-button:hover { filter:brightness(1.025); transform:translateY(-2px); }
+    .chapter-button:active,.task-button:active { transform:translateY(5px); box-shadow:0 2px 0 #cfcfcf; }
+    button:focus-visible { outline:4px solid #356fd0; outline-offset:4px; }
+    .topbar { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:14px; margin-bottom:28px; }
+    .topbar h2 { min-width:0; text-align:center; overflow-wrap:anywhere; }
+    .topbar-spacer { width:46px; }
+    .back {
+      display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px;
+      border:2px solid var(--ink); border-radius:14px; background:var(--pink); cursor:pointer;
+      box-shadow:0 5px 0 var(--pink-dark); font-size:25px; font-weight:900;
     }
-
-    /* Views */
-    .view{display:none;}
-    .view.active{display:block;}
-
-    /* Buttons list */
-    .btnlist{
-      display:flex;
-      flex-direction:column;
-      gap:22px;
-      padding: 4px 8px 0;
+    .back:active { transform:translateY(4px); box-shadow:0 1px 0 var(--pink-dark); }
+    .solution-card {
+      padding:clamp(14px,3vw,24px); border:5px solid var(--ink); border-radius:20px;
+      background:white; box-shadow:0 10px 24px rgba(0,0,0,.12);
     }
-
-    /* Stylischer Button mit leichten Verlauf-Shift */
-    .choice{
-      position: relative;
-      border: 1.5px solid var(--btnBorder);
-      padding: 22px 26px;
-      border-radius: 26px;
-      width: 100%;
-      font-size: 18px;
-      font-weight: 750;
-      letter-spacing: .3px;
-      cursor: pointer;
-      color: #0f3b1f;
-
-      background: linear-gradient(
-        135deg,
-        #c9f7d3 0%,
-        #b9f0c6 40%,
-        #a9e8bb 100%
-      );
-
-      box-shadow:
-        0 10px 20px rgba(0,0,0,.12),
-        inset 0 1px 0 rgba(255,255,255,.9);
-
-      transition:
-        transform .18s ease,
-        box-shadow .18s ease,
-        background-position .35s ease;
-      background-size: 200% 200%;
-      background-position: 0% 50%;
-      text-align:center;
-    }
-
-    /* dezenter Glanz */
-    .choice::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:26px;
-      background: linear-gradient(120deg, rgba(255,255,255,.55), rgba(255,255,255,0) 55%);
-      opacity:.6;
-      pointer-events:none;
-    }
-
-    .choice:hover{
-      background-position: 100% 50%;
-      box-shadow:
-        0 14px 28px rgba(0,0,0,.14),
-        inset 0 1px 0 rgba(255,255,255,.95);
-    }
-
-    /* Press animation */
-    .choice.press,
-    .choice:active{
-      transform: translateY(6px);
-      background-position: 50% 100%;
-      box-shadow:
-        0 5px 10px rgba(0,0,0,.18),
-        inset 0 2px 4px rgba(0,0,0,.12);
-    }
-
-    /* Detail */
-    .detail{
-      min-height: 420px;
-      position:relative;
-      padding: 10px 8px 8px;
-    }
-
-    .back{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      border:0;
-      border-radius:14px;
-      padding: 12px 14px;
-      font-size: 16px;
-      font-weight: 750;
-      cursor:pointer;
-      background: linear-gradient(180deg, #f2f2f2, #e6e6e6);
-      box-shadow:
-        0 9px 0 #cfcfcf,
-        0 16px 22px rgba(0,0,0,.14),
-        inset 0 2px 0 rgba(255,255,255,.8);
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-    }
-    .back:active{
-      transform: translateY(6px);
-      box-shadow:
-        0 3px 0 #cfcfcf,
-        0 10px 18px rgba(0,0,0,.12),
-        inset 0 2px 0 rgba(255,255,255,.65);
-    }
-    .back:focus-visible{
-      outline: 3px solid rgba(60,130,255,.45);
-      outline-offset: 4px;
-    }
-
-    .sectionTitle{
-      margin-top: 16px;
-      font-weight: 850;
-      opacity: .8;
-      padding-left: 2px;
-    }
-
-    #imageContainer{
-      margin-top: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
-
-    .imgWrap{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .imgWrap img{
-      width:100%;
-      max-width:100%;
-      border-radius:14px;
-      border: 1px solid rgba(0,0,0,.10);
-      box-shadow: 0 8px 20px rgba(0,0,0,.15);
-    }
-    .imgStatus{
-      font-size: 12px;
-      opacity: .65;
-    }
-    .note{
-      margin-top: 14px;
-      font-size: 13px;
-      opacity: .6;
+    .solution-card.orange { border-color:var(--orange); }
+    .solution-card.green { border-color:var(--green); }
+    .solution-card img { display:block; width:auto; max-width:100%; height:auto; margin:0 auto; }
+    .legend { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:24px; color:#4d4d4d; font-size:14px; }
+    .legend span { display:inline-flex; align-items:center; gap:7px; }
+    .dot { width:13px; height:13px; border:3px solid var(--ink); border-radius:4px; }
+    .dot.orange { border-color:var(--orange); }
+    .dot.green { border-color:var(--green); }
+    @media (max-width:560px) {
+      .app { width:min(100% - 12px,920px); padding:6px 0 18px; }
+      .panel { min-height:calc(100vh - 12px); padding:18px 12px 28px; border-radius:22px; }
+      .hero { margin:-18px -12px 24px; padding:30px 14px; border-radius:20px 20px 15px 15px; }
+      .list { gap:15px; }
+      .chapter-button { padding:18px 14px; border-radius:17px; }
+      .topbar { grid-template-columns:44px 1fr 44px; gap:8px; }
+      .back { width:42px; height:42px; }
+      .solution-card { border-width:4px; padding:10px; }
     }
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Lösungen Arbeitsplan 1">
-    <!-- START VIEW -->
-    <section id="view-home" class="view active" aria-labelledby="title">
-      <header>
-        <h1 id="title">Lösungen Arbeitsplan 1</h1>
-        <div class="star" aria-hidden="true"><span>★</span></div>
-      </header>
-
-      <div class="btnlist" role="list">
-        <button class="choice" data-target="1" role="listitem">Addieren und Subtrahieren gleichnamiger Brüche</button>
-        <button class="choice" data-target="2" role="listitem">Addieren und Subtrahieren ungleichnamiger Brüche</button>
-        <button class="choice" data-target="3" role="listitem">Multiplizieren von Brüchen</button>
-        <button class="choice" data-target="4" role="listitem">Dividieren von Brüchen</button>
-        <button class="choice" data-target="5" role="listitem">Punkt vor Strich. Klammer. Mit Brüchen</button>
+  <main class="app">
+    <section class="panel view" id="home-view">
+      <div class="hero">
+        <h1>Lösungen Arbeitsplan 1</h1>
+        <p class="subtitle">Wähle zuerst ein Teilkapitel.</p>
+      </div>
+      <div class="list" id="chapter-list"></div>
+    </section>
+    <section class="panel view" id="chapter-view" hidden>
+      <div class="topbar">
+        <button class="back" id="chapter-back" type="button" aria-label="Zurück zur Startseite">←</button>
+        <h2 id="chapter-title"></h2><span class="topbar-spacer" aria-hidden="true"></span>
+      </div>
+      <div class="list" id="task-list"></div>
+      <div class="legend" aria-label="Bedeutung der Farben">
+        <span><i class="dot"></i> normal</span>
+        <span><i class="dot orange"></i> linke Seite (or.)</span>
+        <span><i class="dot green"></i> rechte Seite (gr.)</span>
       </div>
     </section>
-
-    <!-- DETAIL VIEW -->
-    <section id="view-detail" class="view" aria-label="Detailseite">
-      <div class="detail">
-        <button class="back" id="backBtn" type="button">← Zurück</button>
-        <div id="imageContainer"></div>
-        <div style="margin-top:28px; display:flex; justify-content:center;">
-          <button class="back" id="backBtnBottom" type="button">← Zurück</button>
-        </div>
-        </div>
+    <section class="panel view" id="solution-view" hidden>
+      <div class="topbar">
+        <button class="back" id="solution-back" type="button" aria-label="Zurück zu den Aufgaben">←</button>
+        <h2 id="solution-title"></h2><span class="topbar-spacer" aria-hidden="true"></span>
+      </div>
+      <div class="solution-card" id="solution-card">
+        <img id="solution-image" src="" alt="">
+      </div>
     </section>
-  </div>
-
+  </main>
   <script>
-    (function(){
-      const home = document.getElementById('view-home');
-      const detail = document.getElementById('view-detail');
-      const backBtn = document.getElementById('backBtn');
-      const backBtnBottom = document.getElementById('backBtnBottom');
-      const container = document.getElementById('imageContainer');
-      const choiceButtons = Array.from(document.querySelectorAll('.choice'));
-
-      const imgMap = {
-        "1": ["1.jpg"],
-        "2": ["2.jpg", "3.jpg", "4.jpg"],
-        "3": ["5.jpg"],
-        "4": ["6.jpg"],
-        "5": ["7.jpg"]
-      };
-
-      function showHome(push=false){
-        detail.classList.remove('active');
-        home.classList.add('active');
-        if(push) history.pushState({view:'home'}, '', '#home');
-      }
-
-      function showDetail(n, push=false){
-        home.classList.remove('active');
-        detail.classList.add('active');
-        container.innerHTML = "";
-
-        (imgMap[n] || []).forEach(src => {
-          const wrap = document.createElement('div');
-          wrap.className = 'imgWrap';
-
-          const img = document.createElement('img');
-          img.src = src;
-          img.alt = src;
-          img.loading = "lazy";
-
-          const status = document.createElement('div');
-          status.className = 'imgStatus';
-          status.textContent = "Lade " + src + " …";
-
-          img.addEventListener('load', () => { status.textContent = ""; });
-          img.addEventListener('error', () => {
-            status.textContent = "❗ Konnte " + src + " nicht laden. Prüfe: Dateiname/Endung/Groß-Klein + gleicher Ordner.";
-          });
-
-          wrap.appendChild(img);
-          wrap.appendChild(status);
-          container.appendChild(wrap);
-        });
-
-        if(push) history.pushState({view:'detail', n}, '', '#k' + n);
-      }
-
-      // Click handlers: short press, then open
-      choiceButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (btn.dataset.busy === '1') return;
-          btn.dataset.busy = '1';
-
-          btn.classList.add('press');
-          setTimeout(() => {
-            btn.classList.remove('press');
-            setTimeout(() => {
-              showDetail(btn.dataset.target, true);
-              btn.dataset.busy = '0';
-            }, 90);
-          }, 140);
-        });
+    const chapters = [
+      { id:"gleichnamig", title:"Addieren und Subtrahieren gleichnamiger Brüche", tasks:[
+        { id:"same-a", label:"Buch S. 44 Nr. A", image:"solutions/same-a.webp" },
+        { id:"same-2", label:"Buch S. 44 Nr. 2", image:"solutions/same-2.webp" },
+        { id:"same-4-or", label:"Buch S. 45 Nr. 4 or. a)–d)", image:"solutions/same-4-or.webp", frame:"orange" },
+        { id:"same-5-or", label:"Buch S. 45 Nr. 5 or. a)–d)", image:"solutions/same-5-or.webp", frame:"orange" }
+      ]},
+      { id:"ungleichnamig", title:"Addieren und Subtrahieren ungleichnamiger Brüche", tasks:[
+        { id:"unlike-3", label:"Buch S. 47 Nr. 3", image:"solutions/unlike-3.webp" },
+        { id:"unlike-4-or", label:"Buch S. 47 Nr. 4 or.", image:"solutions/unlike-4-or.webp", frame:"orange" },
+        { id:"unlike-6-or", label:"Buch S. 47 Nr. 6 or. a)–f)", image:"solutions/unlike-6-or.webp", frame:"orange" }
+      ]},
+      { id:"multiplizieren", title:"Multiplizieren von Brüchen", tasks:[
+        { id:"multiply-3", label:"Buch S. 51 Nr. 3", image:"solutions/multiply-3.webp" },
+        { id:"multiply-4-or", label:"Buch S. 51 Nr. 4 or.", image:"solutions/multiply-4-or.webp", frame:"orange" },
+        { id:"multiply-ah22-2", label:"AH S. 22 Nr. 2", image:"solutions/multiply-ah22-2.webp" }
+      ]},
+      { id:"dividieren", title:"Dividieren von Brüchen", tasks:[
+        { id:"divide-1", label:"Buch S. 53 Nr. 1", image:"solutions/divide-1.webp" },
+        { id:"divide-2", label:"Buch S. 53 Nr. 2", image:"solutions/divide-2.webp" },
+        { id:"divide-a", label:"Buch S. 54 Nr. A", image:"solutions/divide-a.webp" },
+        { id:"divide-5-or", label:"Buch S. 54 Nr. 5 or. a), c), e)", image:"solutions/divide-5-or.webp", frame:"orange" }
+      ]},
+      { id:"punkt-vor-strich", title:"Punkt vor Strich. Klammern. Mit Brüchen", tasks:[
+        { id:"order-1", label:"Buch S. 56 Nr. 1", image:"solutions/order-1.webp" },
+        { id:"order-2", label:"Buch S. 56 Nr. 2", image:"solutions/order-2.webp" },
+        { id:"order-a", label:"Buch S. 57 Nr. A", image:"solutions/order-a.webp" },
+        { id:"order-ah24-1", label:"AH S. 24 Nr. 1", image:"solutions/order-ah24-1.webp" }
+      ]}
+    ];
+    const homeView=document.querySelector("#home-view");
+    const chapterView=document.querySelector("#chapter-view");
+    const solutionView=document.querySelector("#solution-view");
+    const chapterList=document.querySelector("#chapter-list");
+    const taskList=document.querySelector("#task-list");
+    const chapterTitle=document.querySelector("#chapter-title");
+    const solutionTitle=document.querySelector("#solution-title");
+    const solutionCard=document.querySelector("#solution-card");
+    const solutionImage=document.querySelector("#solution-image");
+    let activeChapter=null;
+    function showOnly(view) {
+      [homeView,chapterView,solutionView].forEach(item=>item.hidden=item!==view);
+      window.scrollTo({top:0,behavior:"instant"});
+    }
+    function renderHome(updateHash=true) {
+      activeChapter=null; showOnly(homeView);
+      if(updateHash) history.pushState({view:"home"},"","#home");
+    }
+    function renderChapter(chapter,updateHash=true) {
+      activeChapter=chapter; chapterTitle.textContent=chapter.title; taskList.replaceChildren();
+      chapter.tasks.forEach(task=>{
+        const button=document.createElement("button");
+        button.type="button"; button.className="task-button"; button.textContent=task.label;
+        button.addEventListener("click",()=>renderSolution(chapter,task)); taskList.append(button);
       });
-
-      backBtn.addEventListener('click', () => history.back());
-      if(backBtnBottom){ backBtnBottom.addEventListener('click', () => history.back()); }
-
-      window.addEventListener('popstate', (e) => {
-        const state = e.state;
-        if(!state || state.view === 'home'){
-          showHome(false);
-        } else if(state.view === 'detail'){
-          showDetail(state.n || "1", false);
+      showOnly(chapterView);
+      if(updateHash) history.pushState({view:"chapter",chapter:chapter.id},"",`#kapitel/${chapter.id}`);
+    }
+    function renderSolution(chapter,task,updateHash=true) {
+      activeChapter=chapter; solutionTitle.textContent=task.label;
+      solutionCard.className=`solution-card ${task.frame||""}`.trim();
+      solutionImage.src=task.image; solutionImage.alt=`Lösung zu ${task.label}`; showOnly(solutionView);
+      if(updateHash) history.pushState({view:"solution",chapter:chapter.id,task:task.id},"",`#loesung/${task.id}`);
+    }
+    chapters.forEach(chapter=>{
+      const button=document.createElement("button");
+      button.type="button"; button.className="chapter-button"; button.textContent=chapter.title;
+      button.addEventListener("click",()=>renderChapter(chapter)); chapterList.append(button);
+    });
+    document.querySelector("#chapter-back").addEventListener("click",()=>renderHome());
+    document.querySelector("#solution-back").addEventListener("click",()=>renderChapter(activeChapter));
+    function restoreFromHash() {
+      const hash=location.hash;
+      if(hash.startsWith("#kapitel/")) {
+        const chapter=chapters.find(item=>item.id===hash.split("/")[1]);
+        if(chapter) return renderChapter(chapter,false);
+      }
+      if(hash.startsWith("#loesung/")) {
+        const id=hash.split("/")[1];
+        for(const chapter of chapters) {
+          const task=chapter.tasks.find(item=>item.id===id);
+          if(task) return renderSolution(chapter,task,false);
         }
-      });
-
-      // Initial state
-      if(location.hash && location.hash.startsWith('#k')){
-        const n = location.hash.replace('#k','') || '1';
-        history.replaceState({view:'detail', n}, '', location.hash);
-        showDetail(n, false);
-      } else {
-        history.replaceState({view:'home'}, '', '#home');
-        showHome(false);
       }
-    })();
+      renderHome(false);
+    }
+    window.addEventListener("popstate",restoreFromHash);
+    history.replaceState({view:"initial"},"",location.hash||"#home");
+    restoreFromHash();
   </script>
 </body>
 </html>
